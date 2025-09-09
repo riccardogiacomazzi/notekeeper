@@ -11,6 +11,19 @@ Even the smallest creatures watch in awe`,
       "https://d2w9rnfcy7mm78.cloudfront.net/24486474/original_ad0432f1022117279e023fbab6fbfa15.jpg?1698901359?bc=0",
     author: "Alice",
     tag: ["nature", "animal"],
+    comments: [
+      {
+        content:
+          "bEven the smallest creatures watch in aweThe quick brown fox jumps over the lazy dog.It runs through the forest and leaps over streams.labla che cagaza",
+        author: "Sfilippy",
+      },
+      { content: "blabla che asfas", author: "Aldo" },
+      { content: "blabla che cagaza", author: "Moro" },
+      { content: "blabla che cagaza", author: "Sfilippy" },
+      { content: "blabla che cagaza", author: "Sfilippy" },
+      { content: "blabla che cagaza", author: "Sfilippy" },
+      { content: "blabla che cagaza", author: "Sfilippy" },
+    ],
   },
   {
     content: `Stars shine brightest in the darkest nights.
@@ -20,6 +33,15 @@ Every twinkle tells a story of distant worlds.`,
       "https://d2w9rnfcy7mm78.cloudfront.net/15110892/original_d7eb6e3432faf402408c7ab79bd1b51c.jpg?1644501180?bc=0",
     author: "Bob",
     tag: ["astronomy", "inspiration"],
+    comments: [
+      { content: "blabla che cagaza", author: "Sfilippy" },
+      { content: "blabla che asfas", author: "Aldo" },
+      { content: "blabla che cagaza", author: "Moro" },
+      { content: "blabla che cagaza", author: "Sfilippy" },
+      { content: "blabla che cagaza", author: "Sfilippy" },
+      { content: "blabla che cagaza", author: "Sfilippy" },
+      { content: "blabla che cagaza", author: "Sfilippy" },
+    ],
   },
   {
     content: `A journey of a thousand miles begins with a single step.

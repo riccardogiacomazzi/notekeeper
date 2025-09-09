@@ -61,8 +61,7 @@ export const SearchParameters = ({
           </div>
         )}
       </div>
-      → “{<span className="text-gray-500">{currentSearch}</span>}” |{" "}
-      {filteredContent.length} results
+      ⟶ “{<span className="text-gray-500">{currentSearch}</span>}” | {filteredContent.length} results
     </div>
   );
 };

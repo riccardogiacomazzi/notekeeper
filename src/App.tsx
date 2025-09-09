@@ -3,6 +3,21 @@ import "./App.css";
 import { Navbar } from "./components/Navbar";
 import testContent from "./assets/test";
 import { SearchParameters } from "./components/SearchParameters";
+import { ItemGrid } from "./components/ItemGrid";
+import { OpenedItem } from "./components/OpenedItem";
+
+type CommentItem = {
+  content: string;
+  author: string;
+};
+
+type ContentItem = {
+  content: string;
+  image?: string;
+  author: string;
+  tag: string[];
+  comments?: CommentItem[];
+};
 
 function App() {
   const [isSearching, setIsSearching] = useState(false);
@@ -11,15 +26,11 @@ function App() {
   const [searchCriteria, setSearchCriteria] = useState("Content");
 
   const [displayedContent, setDisplayedContent] = useState<ContentItem[]>([]);
+  const [isItemOpen, setIsItemOpen] = useState<boolean>(false);
+  const [openedItem, setOpenedItem] = useState<ContentItem | null>(null);
+  const [indexOpen, setIndexOpen] = useState<number | null>(null);
 
   // Data filtering of displayed notes
-  type ContentItem = {
-    content: string;
-    image?: string;
-    author: string;
-    tag: string[];
-  };
-
   const handleFilterContent = (array: ContentItem[], searchCriteria: string, searchText: string) => {
     const search = searchText.trim().toLowerCase();
     const criteria = searchCriteria.trim().toLowerCase();
@@ -35,13 +46,15 @@ function App() {
     });
   };
 
+  let filteredData: ContentItem[];
+
   useEffect(() => {
-    const filteredData = handleFilterContent(testContent, searchCriteria, searchText);
+    filteredData = handleFilterContent(testContent, searchCriteria, searchText);
     setDisplayedContent(filteredData);
   }, [currentSearch, searchCriteria, isSearching]);
 
   return (
-    <>
+    <div className="hide-scrollbar">
       {/* NAVBAR */}
       <Navbar
         searchText={searchText}
@@ -74,20 +87,26 @@ function App() {
             )}
           </div>
           {/* item grid */}
-          <div className="h-screen w-auto pt-10 grid grid-cols-4 gap-4">
-            {displayedContent.map((item, index) => (
-              <div
-                key={index}
-                className="relative flex items-start aspect-square border mb-2 cursor-pointer hover:opacity-50 overflow-hidden"
-              >
-                {item.image && <img className="w-full h-full object-cover opacity-20" src={item.image} alt="" />}
-                <div className="absolute p-6 top-0 left-0">{item.content}</div>
-              </div>
-            ))}
-          </div>
+          <ItemGrid
+            displayedContent={displayedContent}
+            setIsItemOpen={setIsItemOpen}
+            setOpenedItem={setOpenedItem}
+            setIndexOpen={setIndexOpen}
+          />
+          {isItemOpen && (
+            <OpenedItem
+              displayedContent={displayedContent}
+              openedItem={openedItem}
+              setOpenedItem={setOpenedItem}
+              indexOpen={indexOpen}
+              setIndexOpen={setIndexOpen}
+              isItemOpen={isItemOpen}
+              setIsItemOpen={setIsItemOpen}
+            />
+          )}
         </div>
       </div>
-    </>
+    </div>
   );
 }
 
