@@ -30,7 +30,7 @@ export const Navbar = ({ searchText, setSearchText, isSearching, setIsSearching,
     <div className="fixed top-0 left-0 right-0 mx-auto w-full h-12 border-gray-300 z-50 bg-white flex items-center justify-between px-4">
       <div className="flex gap-4 items-center h-full">
         {/* App name */}
-        <div className="cursor-pointer p-1">notekeeper</div>
+        <div className="cursor-pointer p-1">notenavigator</div>
         <div className="flex relative">
           {/* Search bar */}
           <input
@@ -42,7 +42,7 @@ export const Navbar = ({ searchText, setSearchText, isSearching, setIsSearching,
               if (e.key === "Enter") handleSearchEnter(searchText);
             }}
             value={searchText}
-            placeholder="search notekeeper"
+            placeholder="search notenavigator"
           />
           {searchText.length !== 0 && (
             <div className="relative flex justify-center items-center">

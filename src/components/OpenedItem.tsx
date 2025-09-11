@@ -6,6 +6,7 @@ type CommentItem = {
 };
 
 type ContentItem = {
+  title: string;
   content: string;
   image?: string;
   author: string;
@@ -33,10 +34,38 @@ export const OpenedItem = ({
   setIsItemOpen,
 }: OpenedItemProps) => {
   const [commentText, setCommentText] = useState<string>("");
+  const [isEditMenuOpen, SetIsEditMenuOpen] = useState<boolean>(false);
+  const [isEditingNote, setIsEditingNote] = useState<boolean>(false);
+  const [updatedNoteText, setUpdatedNoteText] = useState<string | null>("");
 
-  useEffect(() => {
-    console.log(openedItem);
-  }, [openedItem]);
+  // handle noteEdit Button - editing note & saving
+  const handleNoteEdit = (indexOpen: number | null) => {
+    if (indexOpen === null) return;
+    SetIsEditMenuOpen(!isEditMenuOpen);
+
+    console.log("editing the note with index:", indexOpen);
+  };
+
+  const handleNoteEditClose = () => {
+    SetIsEditMenuOpen(false);
+    setIsEditingNote(false);
+  };
+
+  const handleSaveNote = () => {
+    setIsEditingNote(!isEditingNote);
+    SetIsEditMenuOpen(!isEditMenuOpen);
+    setUpdatedNoteText(openedItem?.content);
+    // send POST to api to update note
+  };
+
+  const handleNoteTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setUpdatedNoteText(e.target.value);
+  };
+
+  const handleUpdateEditedNote = (updatedNote: string, index: number) => {
+    console.log("text:", updatedNote);
+    console.log("index of the note:", index);
+  };
 
   //handle navigation though opened item -> next and prev item
   const handlePrevItem = (indexOpen: number | null) => {
@@ -46,6 +75,8 @@ export const OpenedItem = ({
 
     setIndexOpen(newIndex);
     setOpenedItem(displayedContent[newIndex]);
+    setIsEditingNote(false);
+    SetIsEditMenuOpen(false);
   };
 
   const handleNextItem = (indexOpen: number | null) => {
@@ -54,6 +85,8 @@ export const OpenedItem = ({
     const newIndex = indexOpen === displayedContent.length - 1 ? 0 : indexOpen + 1;
     setIndexOpen(newIndex);
     setOpenedItem(displayedContent[newIndex]);
+    setIsEditingNote(false);
+    SetIsEditMenuOpen(false);
   };
 
   // handle comment text change
@@ -62,9 +95,21 @@ export const OpenedItem = ({
   };
 
   const handleCommentSubmit = (commentText: string) => {
-    if (!commentText) return;
+    if (!commentText || !openedItem) return;
+
     console.log(commentText); //replace with API post
+    const updatedComments = [...(openedItem.comments ?? []), { content: commentText, author: "me" }];
+    const newItem = { ...openedItem, comments: updatedComments };
+
+    setOpenedItem(newItem);
+
     setCommentText("");
+  };
+
+  const handleCommentDelete = (index: number) => {
+    if (!openedItem || !openedItem.comments) return;
+
+    console.log(openedItem?.comments[index].content);
   };
 
   //handle no scroll on modal open
@@ -85,10 +130,65 @@ export const OpenedItem = ({
       ></div>
       {/* item box */}
       <div className="fixed h-[calc(100vh-12rem)] inset-0 z-50 m-24 flex bg-white border">
-        <div className="w-3/4 border-r flex flex-col overflow-y-auto p-4">
-          <div className="mx-12 my-4 min-h-[200px]">{openedItem?.content}</div>
-          <div className="flex items-center justify-center">
-            <img className="max-w-full max-h-[500px]" src={openedItem?.image} />
+        <div className="w-3/4 border-r flex flex-col overflow-y-auto py-8 relative">
+          {/* item title */}
+          <div className={`absolute h-6 max-w-[90%] truncate text-lg top-2 left-4 text-gray-400`}>
+            {openedItem?.title}
+          </div>
+          {/* edit text button */}
+          <div className="absolute h-5 top-2 right-2 ml-2 flex gap-1">
+            {isEditMenuOpen && (
+              <div className="flex flex-row gap-1">
+                {isEditingNote && (
+                  <div
+                    className={`w-24 h-6 relative flex items-center justify-center text-gray-500 hover:bg-gray-100 hover:cursor-pointer border`}
+                    onClick={handleSaveNote}
+                  >
+                    Save
+                  </div>
+                )}
+                <div className="w-24 h-6 relative flex items-center justify-center text-gray-500 hover:bg-gray-100 hover:cursor-pointer border">
+                  Delete
+                </div>
+              </div>
+            )}
+
+            {!isEditMenuOpen ? (
+              <div
+                className={`w-6 h-6 flex items-center justify-center text-gray-500 hover:bg-gray-100 hover:cursor-pointer hover:border
+                ${isEditMenuOpen && "bg-gray-100 border"}`}
+                onClick={() => handleNoteEdit(indexOpen)}
+              >
+                •••
+              </div>
+            ) : (
+              <div
+                className={`w-6 h-6 flex items-center justify-center text-gray-500 hover:bg-gray-100 hover:cursor-pointer hover:border
+                ${isEditMenuOpen && "bg-gray-100 border"}`}
+                onClick={() => handleNoteEditClose()}
+              >
+                ✕
+              </div>
+            )}
+          </div>
+
+          {!isEditingNote ? (
+            <div
+              className={`mx-12 my-4 min-h-[200px] p-4 hover:cursor-pointer whitespace-pre-wrap
+            ${isEditingNote && "bg-gray-100"}`}
+              onClick={handleSaveNote}
+            >
+              {openedItem?.content}
+            </div>
+          ) : (
+            <textarea
+              value={updatedNoteText}
+              onChange={handleNoteTextChange}
+              className="mx-12 my-4 min-h-[200px] p-4 bg-gray-100 focus:outline-none"
+            ></textarea>
+          )}
+          <div className="flex items-center justify-center mx-12">
+            <img className="w-full" src={openedItem?.image} />
           </div>
         </div>
         {/* Info - comments - add comment box */}
@@ -126,13 +226,13 @@ export const OpenedItem = ({
               <span>timestamp</span>
             </div>
             <div className="text-sm flex justify-between border-b">
-              <span>Image</span>
+              <span>Background</span>
               <a
                 className={`text-black visited:text-black hover:underline hover:cursor-pointer`}
                 href={openedItem?.image}
                 target="_blank"
               >
-                Source →
+                ✵ Source ✵ →
               </a>
             </div>
 
@@ -156,7 +256,10 @@ export const OpenedItem = ({
                     <div className="font-bold mr-2 hover:cursor-pointer">{item.author}</div>
                     <div className="text-xs text-gray-500">timestamp</div>
                   </div>
-                  <div className="w-6 h-6 flex items-center justify-center hover:bg-gray-100 text-gray-500 hover:cursor-pointer hover:border">
+                  <div
+                    className="w-6 h-6 flex items-center justify-center hover:bg-gray-100 text-gray-500 hover:cursor-pointer hover:border"
+                    onClick={() => handleCommentDelete(index)}
+                  >
                     •••
                   </div>
                 </div>
