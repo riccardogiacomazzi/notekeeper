@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 interface TestContentItem {
   content: string;
@@ -22,8 +22,6 @@ interface SearchParametersProps {
 }
 
 export const SearchParameters = ({
-  searchText,
-  testContent,
   filteredContent,
   currentSearch,
   searchCriteria,

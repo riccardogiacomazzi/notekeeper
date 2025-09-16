@@ -1,34 +1,26 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import { Navbar } from "./components/Navbar";
+import type { ContentItem } from "./types/types";
+import { Navbar } from "./components/navigation/Navbar";
 import testContent from "./assets/test";
-import { SearchParameters } from "./components/SearchParameters";
-import { ItemGrid } from "./components/ItemGrid";
-import { OpenedItem } from "./components/OpenedItem";
-
-type CommentItem = {
-  content: string;
-  author: string;
-};
-
-type ContentItem = {
-  content: string;
-  image?: string;
-  author: string;
-  tag: string[];
-  comments?: CommentItem[];
-};
+import { SearchParameters } from "./components/home-page/SearchParameters";
+import { ItemGrid } from "./components/home-page/ItemGrid";
+import { OpenedItem } from "./components/open-item-modal/OpenedItem";
+import { NewItem } from "./components/new-item-modal/NewItem";
 
 function App() {
+  // search feature on NavBar
   const [isSearching, setIsSearching] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [currentSearch, setCurrentSearch] = useState("");
   const [searchCriteria, setSearchCriteria] = useState("Content");
-
+  // opened item modal
   const [displayedContent, setDisplayedContent] = useState<ContentItem[]>([]);
   const [isItemOpen, setIsItemOpen] = useState<boolean>(false);
   const [openedItem, setOpenedItem] = useState<ContentItem | null>(null);
   const [indexOpen, setIndexOpen] = useState<number | null>(null);
+  // new post modal
+  const [isNewItemOpen, setIsNewItemOpen] = useState<boolean>(false);
 
   // Data filtering of displayed notes
   const handleFilterContent = (array: ContentItem[], searchCriteria: string, searchText: string) => {
@@ -41,7 +33,7 @@ function App() {
       if (criteria === "author") {
         return item.author.toLowerCase().includes(search);
       } else if (criteria === "tags") {
-        return item.tag.some((t) => t.toLowerCase().includes(search));
+        return item.tags.some((t) => t.toLowerCase().includes(search));
       } else return item.content.toLowerCase().includes(search);
     });
   };
@@ -53,6 +45,16 @@ function App() {
     setDisplayedContent(filteredData);
   }, [currentSearch, searchCriteria, isSearching]);
 
+  //handle no scroll on modal open
+  useEffect(() => {
+    if (isItemOpen || isNewItemOpen) {
+      document.body.classList.add("overflow-hidden");
+    } else {
+      document.body.classList.remove("overflow-hidden");
+    }
+    return () => document.body.classList.remove("overflow-hidden");
+  }, [isItemOpen, isNewItemOpen]);
+
   return (
     <div className="hide-scrollbar">
       {/* NAVBAR */}
@@ -61,7 +63,10 @@ function App() {
         setSearchText={setSearchText}
         isSearching={isSearching}
         setIsSearching={setIsSearching}
+        setIsItemOpen={setIsItemOpen}
         setCurrentSearch={setCurrentSearch}
+        isNewItemOpen={isNewItemOpen}
+        setIsNewItemOpen={setIsNewItemOpen}
       />
 
       {/* MAPPING */}
@@ -93,6 +98,7 @@ function App() {
             setOpenedItem={setOpenedItem}
             setIndexOpen={setIndexOpen}
           />
+          {/* opened item modal */}
           {isItemOpen && (
             <OpenedItem
               displayedContent={displayedContent}
@@ -104,6 +110,8 @@ function App() {
               setIsItemOpen={setIsItemOpen}
             />
           )}
+          {/* new post modal */}
+          {isNewItemOpen && <NewItem setIsNewItemOpen={setIsNewItemOpen} />}
         </div>
       </div>
     </div>

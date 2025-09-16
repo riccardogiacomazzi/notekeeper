@@ -2,11 +2,24 @@ interface NavbarProps {
   searchText: string;
   setSearchText: React.Dispatch<React.SetStateAction<string>>;
   isSearching: boolean;
+  setIsItemOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setIsSearching: React.Dispatch<React.SetStateAction<boolean>>;
   setCurrentSearch: React.Dispatch<React.SetStateAction<string>>;
+  isNewItemOpen: boolean;
+  setIsNewItemOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const Navbar = ({ searchText, setSearchText, isSearching, setIsSearching, setCurrentSearch }: NavbarProps) => {
+export const Navbar = ({
+  searchText,
+  setSearchText,
+  isSearching,
+  setIsItemOpen,
+  setIsSearching,
+  setCurrentSearch,
+  isNewItemOpen,
+  setIsNewItemOpen,
+}: NavbarProps) => {
+  // search handles
   const handleSearchText = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchText(e.target.value);
   };
@@ -19,11 +32,17 @@ export const Navbar = ({ searchText, setSearchText, isSearching, setIsSearching,
     setIsSearching(true);
     console.log("Searching: ", toSearch);
     setCurrentSearch(toSearch);
+    setIsItemOpen(false);
   };
 
   const handleSearchEmpty = () => {
     setIsSearching(false);
     setSearchText("");
+  };
+
+  // new post handles
+  const handleNewPostModalOpen = () => {
+    setIsNewItemOpen(!isNewItemOpen);
   };
 
   return (
@@ -35,7 +54,7 @@ export const Navbar = ({ searchText, setSearchText, isSearching, setIsSearching,
           {/* Search bar */}
           <input
             className={`w-[30vw] text-left p-1 border border-transparent hover:border-gray-300 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:border-gray-300 cursor-text
-  ${isSearching && "bg-gray-100 border-gray-300:"}`}
+                      ${isSearching && "bg-gray-100 border-gray-300:"}`}
             type="text"
             onChange={handleSearchText}
             onKeyDown={(e) => {
@@ -63,7 +82,13 @@ export const Navbar = ({ searchText, setSearchText, isSearching, setIsSearching,
         </div>
       </div>
       <div className="flex gap-4 items-center h-full">
-        <div className="cursor-pointer border border-gray-300 p-1 hover:opacity-50 hover:bg-gray-100 ">new note</div>
+        <div
+          className={`cursor-pointer border border-gray-300 p-1 hover:bg-gray-100 text-gray-500
+          ${isNewItemOpen && "bg-gray-100"}`}
+          onClick={handleNewPostModalOpen}
+        >
+          new note
+        </div>
         <div className="h-[1.75em] aspect-square rounded-full bg-gradient-to-r from-indigo-200 to-teal-200 cursor-pointer hover:opacity-30 transition-opacity duration-200"></div>
       </div>
     </div>

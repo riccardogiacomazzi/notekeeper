@@ -1,18 +1,5 @@
+import type { ContentItem } from "../../types/types";
 import { useEffect, useState, type SetStateAction } from "react";
-
-type CommentItem = {
-  content: string;
-  author: string;
-};
-
-type ContentItem = {
-  title: string;
-  content: string;
-  image?: string;
-  author: string;
-  tag: string[];
-  comments?: CommentItem[];
-};
 
 interface OpenedItemProps {
   displayedContent: ContentItem[];
@@ -36,7 +23,7 @@ export const OpenedItem = ({
   const [commentText, setCommentText] = useState<string>("");
   const [isEditMenuOpen, SetIsEditMenuOpen] = useState<boolean>(false);
   const [isEditingNote, setIsEditingNote] = useState<boolean>(false);
-  const [updatedNoteText, setUpdatedNoteText] = useState<string | null>("");
+  const [updatedNoteText, setUpdatedNoteText] = useState<string>("");
 
   // handle noteEdit Button - editing note & saving
   const handleNoteEdit = (indexOpen: number | null) => {
@@ -54,7 +41,9 @@ export const OpenedItem = ({
   const handleSaveNote = () => {
     setIsEditingNote(!isEditingNote);
     SetIsEditMenuOpen(!isEditMenuOpen);
-    setUpdatedNoteText(openedItem?.content);
+    if (openedItem) {
+      setUpdatedNoteText(openedItem?.content);
+    }
     // send POST to api to update note
   };
 
@@ -112,24 +101,14 @@ export const OpenedItem = ({
     console.log(openedItem?.comments[index].content);
   };
 
-  //handle no scroll on modal open
-  useEffect(() => {
-    if (isItemOpen) {
-      document.body.classList.add("overflow-hidden");
-    } else {
-      document.body.classList.remove("overflow-hidden");
-    }
-    return () => document.body.classList.remove("overflow-hidden");
-  }, [isItemOpen]);
-
   return (
-    <div className="fixed inset-0 z-40">
+    <div className="fixed inset-0 flex justify-center z-40">
       <div
         className="absolute inset-0 bg-white/30 backdrop-blur-md overflow-hidden"
         onClick={() => setIsItemOpen(false)}
-      ></div>
+      />
       {/* item box */}
-      <div className="fixed h-[calc(100vh-12rem)] inset-0 z-50 m-24 flex bg-white border">
+      <div className="h-[calc(100vh-8rem)] w-full z-50 mt-16 mx-12 flex bg-white border">
         <div className="w-3/4 border-r flex flex-col overflow-y-auto py-8 relative">
           {/* item title */}
           <div className={`absolute h-6 max-w-[90%] truncate text-lg top-2 left-4 text-gray-400`}>
@@ -171,24 +150,22 @@ export const OpenedItem = ({
               </div>
             )}
           </div>
-
-          {!isEditingNote ? (
-            <div
-              className={`mx-12 my-4 min-h-[200px] p-4 hover:cursor-pointer whitespace-pre-wrap
+          <div className="relative w-full h-full px-12 py-4">
+            {!isEditingNote ? (
+              <div
+                className={`w-full h-full px-2 hover:cursor-pointer whitespace-pre-wrap border
             ${isEditingNote && "bg-gray-100"}`}
-              onClick={handleSaveNote}
-            >
-              {openedItem?.content}
-            </div>
-          ) : (
-            <textarea
-              value={updatedNoteText}
-              onChange={handleNoteTextChange}
-              className="mx-12 my-4 min-h-[200px] p-4 bg-gray-100 focus:outline-none"
-            ></textarea>
-          )}
-          <div className="flex items-center justify-center mx-12">
-            <img className="w-full" src={openedItem?.image} />
+                onClick={handleSaveNote}
+              >
+                {openedItem?.content}
+              </div>
+            ) : (
+              <textarea
+                value={updatedNoteText}
+                onChange={handleNoteTextChange}
+                className="w-full h-full px-2 bg-gray-100 focus:outline-none"
+              ></textarea>
+            )}
           </div>
         </div>
         {/* Info - comments - add comment box */}
@@ -216,13 +193,17 @@ export const OpenedItem = ({
           </div>
           {/* Post info - comments - text box */}
           {/* post info */}
-          <div className="w-full h-1/5 pt-12 px-2 mb-4">
+          <div className="w-full h-auto pt-12 px-2 mb-4">
             <div className="text-sm flex justify-between border-b">
               <span>Author</span>
               <span className="font-bold hover:cursor-pointer">{openedItem?.author}</span>
             </div>
             <div className="text-sm flex justify-between border-b">
               <span>Added</span>
+              <span>timestamp</span>
+            </div>
+            <div className="text-sm flex justify-between border-b">
+              <span>Edited</span>
               <span>timestamp</span>
             </div>
             <div className="text-sm flex justify-between border-b">
@@ -235,11 +216,10 @@ export const OpenedItem = ({
                 ✵ Source ✵ →
               </a>
             </div>
-
             <div className="text-sm flex justify-between border-b">
               <span>Tags</span>
               <span className="flex flex-row gap-1">
-                {openedItem?.tag.map((item, index) => (
+                {openedItem?.tags.map((item, index) => (
                   <div key={index} className="hover:cursor-pointer hover:underline">
                     {item}
                   </div>
@@ -280,7 +260,7 @@ export const OpenedItem = ({
               className={`
                 ${!commentText ? "text-gray-300" : "text-black"}
                 ${!commentText ? "cursor-default" : "cursor-pointer"}
-                w-full h-1/4 bg-gray-100 flex justify-center items-center text-sm`}
+                w-1/2 h-1/4 bg-gray-100 flex ml-auto justify-center items-center text-sm`}
               onClick={() => handleCommentSubmit(commentText)}
             >
               Add comment →

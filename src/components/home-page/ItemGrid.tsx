@@ -1,17 +1,5 @@
+import type { ContentItem } from "../../types/types";
 import type { SetStateAction } from "react";
-
-type CommentItem = {
-  content: string;
-  author: string;
-};
-
-type ContentItem = {
-  content: string;
-  image?: string;
-  author: string;
-  tag: string[];
-  comments?: CommentItem[];
-};
 
 interface ItemGridProps {
   displayedContent: ContentItem[];
@@ -38,7 +26,11 @@ export const ItemGrid = ({ displayedContent, setIsItemOpen, setOpenedItem, setIn
             className="relative flex items-start aspect-square max-w-[300px] border mb-2 cursor-pointer hover:opacity-50 overflow-hidden"
             onClick={() => handleIsItemOpen(displayedContent, index)}
           >
-            {item.image && <img className="w-full h-full object-cover opacity-20" src={item.image} alt="" />}
+            {item.image ? (
+              <img className="w-full h-full object-cover opacity-20" src={item.image} alt="" />
+            ) : (
+              <div className="w-full h-full object-cover opacity-10 bg-gradient-to-r from-purple-500 via-pink-500 to-red-500"></div>
+            )}
             <div className="absolute p-6 top-0 left-0">{item.content}</div>
           </div>
         ))}
